@@ -1,4 +1,4 @@
-package controller.apps;/*
+/*
  * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
@@ -15,47 +15,50 @@ package controller.apps;/*
  * specific language governing permissions and limitations
  * under the License.
  */
-
+package controller.apps;
 
 import controller.HttpClient;
 import model.Response;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 
 public class SampleApp1 implements SampleApps {
 
-    private static final String SAMPLE_APP = "app1";
-    private static final String PRIME_APP = "prime";
-    private static final String ECHO_APP = "echo";
-
-    @Value("${prime.server.address}")
-    private String primeAddress;
-    @Value("${prime.server.port}")
-    private Integer primePort;
-
-    @Value("${echo.server.address}")
-    private String echoAddress;
-    @Value("${echo.server.port}")
-    private Integer echoPort;
-
-
+    //    @Value("${prime.server.address}")
+    private final String primeAddress = "prime";
+    //    @Value("${prime.server.port}")
+    private final Integer primePort = 9002;
+    //    @Value("${echo.server.address}")
+    private final String echoAddress = "echo";
+    //    @Value("${echo.server.port}")
+    private final Integer echoPort = 9000;
     private HttpClient client;
     private AppMonitor monitor;
+
 
     public SampleApp1(AppMonitor monitor) {
         this.client = new HttpClient();
         this.monitor = monitor;
 
-        monitor.registerApps(new String[]{SAMPLE_APP, PRIME_APP, ECHO_APP});
-        monitor.startStats(SAMPLE_APP);
+        String[] appNames = Arrays.stream(API.class.getEnumConstants()).map(Enum::name).toArray(String[]::new);
+        monitor.registerApps(appNames);
+        monitor.startStats(getAPIIndex(API.SAMPLE_APP));
+    }
+
+    private int getAPIIndex(API apiName) {
+        return apiName.ordinal();
     }
 
     public ResponseEntity<String> execute(String[] params, String[] values) throws IOException, URISyntaxException {
-        monitor.startStats(PRIME_APP);
+
+        long startAPP, startPrime, startEcho;
+
+        startAPP = monitor.startStats(getAPIIndex(API.SAMPLE_APP));
+        startPrime = monitor.startStats(getAPIIndex(API.PRIME_APP));
         // perform the first api call
         Response response = client.sendGet(
                 primeAddress,
@@ -64,23 +67,25 @@ public class SampleApp1 implements SampleApps {
                 new String[]{params[0]},
                 new String[]{values[0]}
         );
-        monitor.updateStats(PRIME_APP);
+        monitor.updateStats(getAPIIndex(API.PRIME_APP), startPrime);
 
         if (response.getStatusCode() == 200) {
-            monitor.startStats(ECHO_APP);
+            startEcho = monitor.startStats(getAPIIndex(API.ECHO_APP));
             response = client.sendGet(echoAddress, echoPort, "echo", new String[]{params[1]},
                     new String[]{values[1] + " " + response.getResponseData()});
-            monitor.updateStats(ECHO_APP);
+            monitor.updateStats(getAPIIndex(API.ECHO_APP), startEcho);
 
-            monitor.updateStats(SAMPLE_APP);
+            monitor.updateStats(getAPIIndex(API.SAMPLE_APP), startAPP);
             if (response.getStatusCode() == 200) {
                 return ResponseEntity.accepted().body(response.getResponseData());
             } else {
                 return ResponseEntity.badRequest().body("echo api failed with code :" + response.getStatusCode());
             }
         } else {
-            monitor.updateStats(SAMPLE_APP);
+            monitor.updateStats(getAPIIndex(API.SAMPLE_APP), startAPP);
             return ResponseEntity.badRequest().body("prime api failed with code :" + response.getStatusCode());
         }
     }
+
+    public enum API {SAMPLE_APP, PRIME_APP, ECHO_APP}
 }

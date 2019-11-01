@@ -42,7 +42,7 @@ public class AppController {
         }
 
         try {
-            return app.execute(new String[]{"value", "message"}, new String[]{String.valueOf(value), message});
+            return app.execute(new String[]{"number", "message"}, new String[]{String.valueOf(value), message});
 
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -54,7 +54,7 @@ public class AppController {
 
     }
 
-    @GetMapping("/monitor_stats")
+    @GetMapping("/get_stats")
     @ResponseBody
     public ResponseEntity<String> monitorStats() {
 //            @RequestParam(name = "message") String message, @RequestParam(name = "number") String number) {
@@ -73,4 +73,25 @@ public class AppController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/pop_stats")
+    @ResponseBody
+    public ResponseEntity<String> popStats() {
+
+        if (monitor == null) {
+            return ResponseEntity.badRequest().body("no monitor registered");
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            String jsonString = mapper.writeValueAsString(monitor.getApiStats());
+            monitor.clearStats();
+            return ResponseEntity.accepted().body(jsonString);
+
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

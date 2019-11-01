@@ -19,34 +19,35 @@ package controller.apps;
 
 import model.APIStats;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class AppMonitor {
 
-    private Map<String, APIStats> apiStats;
-//    public enum API {PRIME, MERGE, ECHO, DB}
+    private APIStats[] apiStats;
 
-    public AppMonitor() {
-        apiStats = new HashMap<>();
-    }
+    public void registerApps(String[] apiNames) {
+        int size = apiNames.length;
+        apiStats = new APIStats[size];
+        for (int i = 0; i < size; i++) {
+            apiStats[i] = new APIStats(apiNames[i]);
 
-    public void registerApps(String[] appNames) {
-        for (String name : appNames) {
-            apiStats.put(name, new APIStats());
         }
     }
 
-    public void startStats(String appName) {
-        apiStats.get(appName).setStartTime();
+    public long startStats(int apiIndex) {
+        return apiStats[apiIndex].setStartTime();
     }
 
-    public void updateStats(String appName) {
-        apiStats.get(appName).updatedStats();
+    public void updateStats(int apiIndex, long startTime) {
+        apiStats[apiIndex].updatedStats(startTime);
     }
 
-    public Map<String, APIStats> getApiStats() {
+    public APIStats[] getApiStats() {
         return apiStats;
+    }
+
+    public void clearStats() {
+        for (APIStats stats : apiStats) {
+            stats.clearStats();
+        }
     }
 
 }
