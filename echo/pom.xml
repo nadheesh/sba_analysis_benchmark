@@ -3,67 +3,65 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.springframework</groupId>
-    <artifactId>gs-echo-service</artifactId>
+    <artifactId>echo-service</artifactId>
     <version>0.1.0</version>
-    <!--<packaging>jar</packaging>-->
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.3.RELEASE</version>
+        <groupId>org.wso2</groupId>
+        <artifactId>performance_simulator</artifactId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <dependencies>
+    <!--<dependencies>-->
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-starter-web</artifactId>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-starter-actuator</artifactId>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-starter-test</artifactId>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+    <!--</dependencies>-->
 
 
-    <properties>
-        <java.version>1.8</java.version>
-        <docker.image.prefix>echo-service</docker.image.prefix>
+    <!--<properties>-->
+        <!--<java.version>1.8</java.version>-->
+        <!--<docker.image.prefix>echo-service</docker.image.prefix>-->
 
-    </properties>
+    <!--</properties>-->
 
-    <build>
-        <plugins>
+    <!--<build>-->
+        <!--<plugins>-->
+            <!--&lt;!&ndash;<plugin>&ndash;&gt;-->
+                <!--&lt;!&ndash;<groupId>com.spotify</groupId>&ndash;&gt;-->
+                <!--&lt;!&ndash;<artifactId>docker-maven-plugin</artifactId>&ndash;&gt;-->
+                <!--&lt;!&ndash;<version>1.0.0</version>&ndash;&gt;-->
+
+                <!--&lt;!&ndash;<configuration>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<imageName>${docker.image.prefix}/${project.artifactId}</imageName>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<dockerDirectory>src/main/docker</dockerDirectory>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<resources>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<resource>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<directory>${project.build.directory}</directory>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<include>${project.build.finalName}.jar</include>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</resource>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</resources>&ndash;&gt;-->
+                <!--&lt;!&ndash;</configuration>&ndash;&gt;-->
+            <!--&lt;!&ndash;</plugin>&ndash;&gt;-->
             <!--<plugin>-->
-                <!--<groupId>com.spotify</groupId>-->
-                <!--<artifactId>docker-maven-plugin</artifactId>-->
-                <!--<version>1.0.0</version>-->
-
-                <!--<configuration>-->
-                    <!--<imageName>${docker.image.prefix}/${project.artifactId}</imageName>-->
-                    <!--<dockerDirectory>src/main/docker</dockerDirectory>-->
-                    <!--<resources>-->
-                        <!--<resource>-->
-                            <!--<directory>${project.build.directory}</directory>-->
-                            <!--<include>${project.build.finalName}.jar</include>-->
-                        <!--</resource>-->
-                    <!--</resources>-->
-                <!--</configuration>-->
+                <!--<groupId>org.springframework.boot</groupId>-->
+                <!--<artifactId>spring-boot-maven-plugin</artifactId>-->
             <!--</plugin>-->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+        <!--</plugins>-->
+    <!--</build>-->
 
 
 
