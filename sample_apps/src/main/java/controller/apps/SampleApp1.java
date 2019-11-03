@@ -19,23 +19,27 @@ package controller.apps;
 
 import controller.HttpClient;
 import model.Response;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 
+@Service
+public class SampleApp1{
 
-public class SampleApp1 implements SampleApps {
+    @Value("${prime.server.address}")
+    private String primeAddress;
+    @Value("${prime.server.port}")
+    private Integer primePort;
+    @Value("${echo.server.address}")
+    private  String echoAddress;
+    @Value("${echo.server.port}")
+    private Integer echoPort;
 
-    //    @Value("${prime.server.address}")
-    private final String primeAddress = "prime";
-    //    @Value("${prime.server.port}")
-    private final Integer primePort = 9002;
-    //    @Value("${echo.server.address}")
-    private final String echoAddress = "echo";
-    //    @Value("${echo.server.port}")
-    private final Integer echoPort = 9000;
     private HttpClient client;
     private AppMonitor monitor;
 
@@ -54,12 +58,12 @@ public class SampleApp1 implements SampleApps {
     }
 
     public ResponseEntity<String> execute(String[] params, String[] values) throws IOException, URISyntaxException {
-
         long startAPP, startPrime, startEcho;
 
         startAPP = monitor.startStats(getAPIIndex(API.SAMPLE_APP));
         startPrime = monitor.startStats(getAPIIndex(API.PRIME_APP));
-        // perform the first api call
+
+        // performs the first api call
         Response response = client.sendGet(
                 primeAddress,
                 primePort,
@@ -71,7 +75,13 @@ public class SampleApp1 implements SampleApps {
 
         if (response.getStatusCode() == 200) {
             startEcho = monitor.startStats(getAPIIndex(API.ECHO_APP));
-            response = client.sendGet(echoAddress, echoPort, "echo", new String[]{params[1]},
+
+            // performs the second api call
+            response = client.sendGet(
+                    echoAddress,
+                    echoPort,
+                    "echo",
+                    new String[]{params[1]},
                     new String[]{values[1] + " " + response.getResponseData()});
             monitor.updateStats(getAPIIndex(API.ECHO_APP), startEcho);
 

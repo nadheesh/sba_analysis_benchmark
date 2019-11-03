@@ -27,7 +27,7 @@ public class APIStats {
     private AtomicLong startTime;
     private AtomicLong endTime;
     //    private ConcurrentLinkedQueue<Long> requestTimes;
-    private ConcurrentLinkedQueue<Long> responseTimes;
+    private ConcurrentLinkedQueue<Long[]> timeStamps;
     private AtomicInteger requestCount;
 
     public APIStats(String apiName) {
@@ -36,8 +36,7 @@ public class APIStats {
         this.endTime = new AtomicLong();
         this.requestCount = new AtomicInteger();
 
-//        this.requestTimes = new ConcurrentLinkedQueue<>();
-        this.responseTimes = new ConcurrentLinkedQueue<>();
+        this.timeStamps = new ConcurrentLinkedQueue<>();
     }
 
     // getters
@@ -57,12 +56,8 @@ public class APIStats {
         return requestCount;
     }
 
-//    public ConcurrentLinkedQueue<Long> getRequestTimes() {
-//        return requestTimes;
-//    }
-
-    public ConcurrentLinkedQueue<Long> getResponseTimes() {
-        return responseTimes;
+    public ConcurrentLinkedQueue<Long[]> getTimeStamps() {
+        return timeStamps;
     }
 
     // setters (private use only)
@@ -81,7 +76,7 @@ public class APIStats {
     public void updatedStats(long startTime) {
         long currentTime = System.currentTimeMillis();
         endTime.updateAndGet(value -> value < currentTime ? currentTime : value);
-        responseTimes.add(currentTime - startTime);
+        timeStamps.add(new Long[]{startTime, currentTime});
         incrementRequestCount();
     }
 
@@ -90,6 +85,6 @@ public class APIStats {
         startTime.set(0);
         endTime.set(0); // not necessary
 
-        responseTimes.clear();
+        timeStamps.clear();
     }
 }

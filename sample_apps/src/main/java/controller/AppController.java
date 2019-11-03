@@ -4,7 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controller.apps.AppMonitor;
 import controller.apps.SampleApp1;
-import controller.apps.SampleApps;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,20 +18,14 @@ import java.net.URISyntaxException;
 @Controller
 public class AppController {
 
-    private SampleApps app;
+    @Autowired
+    private SampleApp1 app;
+    @Autowired
     private AppMonitor monitor;
-
-    public AppController() {
-        monitor = new AppMonitor();
-    }
 
     @GetMapping("/app1")
     @ResponseBody
     public ResponseEntity<String> executeApp1(@RequestParam(name = "message") String message, @RequestParam(name = "number") String number) {
-
-        if (app == null) {
-            this.app = new SampleApp1(monitor);
-        }
 
         int value;
         try {

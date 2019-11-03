@@ -18,7 +18,10 @@
 package controller.apps;
 
 import model.APIStats;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AppMonitor {
 
     private APIStats[] apiStats;
