@@ -13,7 +13,6 @@ public class PrimeController {
     @GetMapping("/prime")
     @ResponseBody
     public String prime(@RequestParam(name="number") String number) {
-//        System.out.println(number);
         int int_number;
         try {
             int_number = Integer.parseInt(number);

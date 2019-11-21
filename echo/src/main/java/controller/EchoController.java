@@ -12,7 +12,6 @@ public class EchoController {
     @GetMapping("/echo")
     @ResponseBody
     public String echo(@RequestParam(name="message") String message) {
-//        System.out.println(message);
         return message;
     }
 
