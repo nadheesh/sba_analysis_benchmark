@@ -1,22 +1,25 @@
 package controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controller.apps.AppMonitor;
 import controller.apps.SampleApp1;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 @Controller
 public class AppController {
+
+    private Logger logger = LoggerFactory.getLogger(AppController.class);
 
     @Autowired
     private SampleApp1 app;
@@ -40,10 +43,10 @@ public class AppController {
             return app.execute(new String[]{"number", "message"}, new String[]{String.valueOf(value), message});
 
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (URISyntaxException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
@@ -51,41 +54,48 @@ public class AppController {
 
     @GetMapping("/get_stats")
     @ResponseBody
-    public ResponseEntity<String> monitorStats() {
-//            @RequestParam(name = "message") String message, @RequestParam(name = "number") String number) {
+    public void monitorStats(@RequestParam(name = "filename") String filename) {
 
         if (monitor == null) {
-            return ResponseEntity.badRequest().body("no monitor registered");
+            logger.error("no monitor registered");
+            return;
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-
         try {
-            String jsonString = mapper.writeValueAsString(monitor.getApiStats());
-            return ResponseEntity.accepted().body(jsonString);
 
-        } catch (JsonProcessingException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            ObjectMapper mapper = new ObjectMapper();
+            FileOutputStream outputStream = new FileOutputStream("temp/" + filename + ".json");
+
+            String jsonString = mapper.writeValueAsString(monitor.getApiStats());
+            outputStream.write(jsonString.getBytes());
+            outputStream.close();
+
+        } catch (IOException e) {
+            logger.error(e.getMessage());
         }
     }
 
     @GetMapping("/pop_stats")
     @ResponseBody
-    public ResponseEntity<String> popStats() {
+    public void popStats(@RequestParam(name = "filename") String filename) {
 
         if (monitor == null) {
-            return ResponseEntity.badRequest().body("no monitor registered");
+            logger.error("no monitor registered");
+            return;
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-
         try {
+
+            ObjectMapper mapper = new ObjectMapper();
+            FileOutputStream outputStream = new FileOutputStream("temp/" + filename + ".json");
+
             String jsonString = mapper.writeValueAsString(monitor.getApiStats());
             monitor.clearStats();
-            return ResponseEntity.accepted().body(jsonString);
+            outputStream.write(jsonString.getBytes());
+            outputStream.close();
 
-        } catch (JsonProcessingException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
         }
     }
 
