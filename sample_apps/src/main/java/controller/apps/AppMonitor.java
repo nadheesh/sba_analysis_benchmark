@@ -18,7 +18,6 @@
 package controller.apps;
 
 import model.APIStats;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Service

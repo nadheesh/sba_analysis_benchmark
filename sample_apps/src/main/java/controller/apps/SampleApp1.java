@@ -21,7 +21,6 @@ import controller.HttpClient;
 import model.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -29,14 +28,14 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 
 @Service
-public class SampleApp1{
+public class SampleApp1 {
 
     @Value("${prime.server.address}")
     private String primeAddress;
     @Value("${prime.server.port}")
     private Integer primePort;
     @Value("${echo.server.address}")
-    private  String echoAddress;
+    private String echoAddress;
     @Value("${echo.server.port}")
     private Integer echoPort;
 
