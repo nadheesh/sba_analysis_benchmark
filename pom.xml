@@ -19,7 +19,7 @@
         <module>echo</module>
         <module>prime</module>
         <module>sample_apps</module>
-        <module>db</module>
+<!--        <module>db</module>-->
         <module>sort</module>
 
     </modules>
