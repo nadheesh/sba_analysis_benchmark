@@ -27,38 +27,34 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 
 @Service
-public class SampleApp1 {
+public class PrimeApp {
 
     @Value("${prime.server.address}")
     private String primeAddress;
     @Value("${prime.server.port}")
     private Integer primePort;
-    @Value("${echo.server.address}")
-    private String echoAddress;
-    @Value("${echo.server.port}")
-    private Integer echoPort;
 
-    private final AppMonitor monitor;
+    private AppMonitor monitor;
+
 
     @Autowired
     private RestTemplate restTemplate;
 
-    public SampleApp1(AppMonitor monitor) {
+    public PrimeApp(AppMonitor monitor) {
         this.monitor = monitor;
 
         String[] appNames = Arrays.stream(API.class.getEnumConstants()).map(Enum::name).toArray(String[]::new);
         monitor.registerApps(appNames);
-        monitor.startStats(getAPIIndex(API.SAMPLE_APP));
+        monitor.startStats(getAPIIndex(API.PRIME_APP));
     }
+
 
     private int getAPIIndex(API apiName) {
         return apiName.ordinal();
     }
 
     public ResponseEntity<String> execute(String[] params, String[] values) {
-        long startAPP, startPrime, startEcho;
-
-        startAPP = monitor.startStats(getAPIIndex(API.SAMPLE_APP));
+        long startPrime;
 
         String primeURL = "http://" + primeAddress + ":" + primePort + "/prime?" + params[0] + "=" + values[0];
         startPrime = monitor.startStats(getAPIIndex(API.PRIME_APP));
@@ -67,25 +63,11 @@ public class SampleApp1 {
         monitor.updateStats(getAPIIndex(API.PRIME_APP), startPrime);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-
-            String echoURL = "http://" + echoAddress + ":" + echoPort + "/echo?" + params[1] + "=" + values[1];
-            startEcho = monitor.startStats(getAPIIndex(API.ECHO_APP));
-            // performs the second api call
-            response = this.restTemplate.getForEntity(echoURL, String.class);
-            monitor.updateStats(getAPIIndex(API.ECHO_APP), startEcho);
-
-            monitor.updateStats(getAPIIndex(API.SAMPLE_APP), startAPP);
-
-            if (response.getStatusCode() == HttpStatus.OK) {
-                return ResponseEntity.accepted().body(response.getBody());
-            } else {
-                return ResponseEntity.badRequest().body("echo api failed with code :" + response.getStatusCode());
-            }
+            return ResponseEntity.accepted().body(response.getBody());
         } else {
-            monitor.updateStats(getAPIIndex(API.SAMPLE_APP), startAPP);
             return ResponseEntity.badRequest().body("prime api failed with code :" + response.getStatusCode());
         }
     }
 
-    public enum API {SAMPLE_APP, PRIME_APP, ECHO_APP}
+    public enum API {PRIME_APP}
 }

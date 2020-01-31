@@ -26,15 +26,17 @@ public class APIStats {
     private String apiName;
     private AtomicLong startTime;
     private AtomicLong endTime;
-    //    private ConcurrentLinkedQueue<Long> requestTimes;
     private ConcurrentLinkedQueue<Long[]> timeStamps;
     private AtomicInteger requestCount;
+    private AtomicInteger workInProgress;
 
     public APIStats(String apiName) {
         this.apiName = apiName;
         this.startTime = new AtomicLong();
         this.endTime = new AtomicLong();
+
         this.requestCount = new AtomicInteger();
+        this.workInProgress = new AtomicInteger();
 
         this.timeStamps = new ConcurrentLinkedQueue<>();
     }
@@ -56,17 +58,28 @@ public class APIStats {
         return requestCount;
     }
 
+    public AtomicInteger getWorkInProgress() {
+        return workInProgress;
+    }
+
     public ConcurrentLinkedQueue<Long[]> getTimeStamps() {
         return timeStamps;
     }
 
-    // setters (private use only)
+    // setters (private use only) //
     private void incrementRequestCount() {
         requestCount.incrementAndGet();
     }
 
-    // update methods from here
+    public void incrementWorkInProgress() {
+        workInProgress.incrementAndGet();
+    }
 
+    private void decrementWorkInProgress() {
+        workInProgress.decrementAndGet();
+    }
+
+    // update methods from here //
     public long setStartTime() {
         long currentTime = System.currentTimeMillis();
         startTime.updateAndGet(value -> value <= 0 || value > currentTime ? currentTime : value);
@@ -76,7 +89,8 @@ public class APIStats {
     public void updatedStats(long startTime) {
         long currentTime = System.currentTimeMillis();
         endTime.updateAndGet(value -> value < currentTime ? currentTime : value);
-        timeStamps.add(new Long[]{startTime, currentTime});
+        decrementWorkInProgress();
+        timeStamps.add(new Long[]{startTime, currentTime, (long)workInProgress.get()});
         incrementRequestCount();
     }
 
@@ -84,7 +98,7 @@ public class APIStats {
         requestCount.set(0);
         startTime.set(0);
         endTime.set(0); // not necessary
-
+        workInProgress.set(0);
         timeStamps.clear();
     }
 }

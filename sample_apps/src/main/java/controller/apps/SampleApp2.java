@@ -27,23 +27,23 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 
 @Service
-public class SampleApp1 {
+public class SampleApp2 {
 
     @Value("${prime.server.address}")
     private String primeAddress;
     @Value("${prime.server.port}")
     private Integer primePort;
-    @Value("${echo.server.address}")
-    private String echoAddress;
-    @Value("${echo.server.port}")
-    private Integer echoPort;
+    @Value("${sort.server.address}")
+    private String sortAddress;
+    @Value("${sort.server.port}")
+    private Integer sortPort;
 
     private final AppMonitor monitor;
 
     @Autowired
     private RestTemplate restTemplate;
 
-    public SampleApp1(AppMonitor monitor) {
+    public SampleApp2(AppMonitor monitor) {
         this.monitor = monitor;
 
         String[] appNames = Arrays.stream(API.class.getEnumConstants()).map(Enum::name).toArray(String[]::new);
@@ -56,10 +56,9 @@ public class SampleApp1 {
     }
 
     public ResponseEntity<String> execute(String[] params, String[] values) {
-        long startAPP, startPrime, startEcho;
+        long startAPP, startPrime, startSort;
 
         startAPP = monitor.startStats(getAPIIndex(API.SAMPLE_APP));
-
         String primeURL = "http://" + primeAddress + ":" + primePort + "/prime?" + params[0] + "=" + values[0];
         startPrime = monitor.startStats(getAPIIndex(API.PRIME_APP));
         // performs the first api call
@@ -67,19 +66,17 @@ public class SampleApp1 {
         monitor.updateStats(getAPIIndex(API.PRIME_APP), startPrime);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-
-            String echoURL = "http://" + echoAddress + ":" + echoPort + "/echo?" + params[1] + "=" + values[1];
-            startEcho = monitor.startStats(getAPIIndex(API.ECHO_APP));
+            String sortURL = "http://" + sortAddress + ":" + sortPort + "/sort?" + params[1] + "=" + values[1];
+            startSort = monitor.startStats(getAPIIndex(API.SORT_APP));
             // performs the second api call
-            response = this.restTemplate.getForEntity(echoURL, String.class);
-            monitor.updateStats(getAPIIndex(API.ECHO_APP), startEcho);
-
+            response = this.restTemplate.getForEntity(sortURL, String.class);
+            monitor.updateStats(getAPIIndex(API.SORT_APP), startSort);
             monitor.updateStats(getAPIIndex(API.SAMPLE_APP), startAPP);
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 return ResponseEntity.accepted().body(response.getBody());
             } else {
-                return ResponseEntity.badRequest().body("echo api failed with code :" + response.getStatusCode());
+                return ResponseEntity.badRequest().body("sort api failed with code :" + response.getStatusCode());
             }
         } else {
             monitor.updateStats(getAPIIndex(API.SAMPLE_APP), startAPP);
@@ -87,5 +84,5 @@ public class SampleApp1 {
         }
     }
 
-    public enum API {SAMPLE_APP, PRIME_APP, ECHO_APP}
+    public enum API {SAMPLE_APP, PRIME_APP, SORT_APP}
 }

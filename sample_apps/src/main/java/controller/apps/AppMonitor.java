@@ -35,6 +35,7 @@ public class AppMonitor {
     }
 
     public long startStats(int apiIndex) {
+        apiStats[apiIndex].incrementWorkInProgress();
         return apiStats[apiIndex].setStartTime();
     }
 
